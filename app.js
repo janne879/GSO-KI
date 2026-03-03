@@ -22,7 +22,6 @@ const inputArea     = $("input-area");
 const messagesEl    = $("messages");
 const userInput     = $("user-input");
 const sendBtn       = $("send-btn");
-const stopBtn       = $("stop-btn");
 const loadModelBtn  = $("load-model-btn");
 const loadProgress  = $("load-progress-wrap");
 const progressFill  = $("load-progress-fill");
@@ -156,7 +155,6 @@ async function sendMessage() {
   const bubble = assistantEl.querySelector(".bubble");
 
   isGenerating = true;
-  stopBtn.style.display = "flex";
   abortController = new AbortController();
 
   let fullResponse = "";
@@ -203,14 +201,10 @@ async function sendMessage() {
   saveHistory();
 
   isGenerating = false;
-  stopBtn.style.display = "none";
   sendBtn.disabled = !userInput.value.trim();
   scrollToBottom();
 }
 
-function stopGeneration() {
-  if (abortController) abortController.abort();
-}
 
 // ─── DOM Helpers ──────────────────────────────────────────────────────────────
 function appendMessageEl(role, content, animate) {
@@ -218,7 +212,7 @@ function appendMessageEl(role, content, animate) {
   msg.className = `message ${role}`;
   if (!animate) msg.style.animation = "none";
 
-  const avatarLabel = role === "user" ? "U" : "N";
+  const avatarLabel = role === "user" ? "Du" : "GSO";
   const contentHtml = content ? formatMarkdown(content) : "";
 
   msg.innerHTML = `
@@ -286,9 +280,9 @@ function formatMarkdown(text) {
 
 function addCodeCopyButtons(container) {
   container.querySelectorAll("pre").forEach(pre => {
-    if (pre.querySelector(".kopieren-code-btn")) return;
+    if (pre.querySelector(".copy-code-btn")) return;
     const btn = document.createElement("button");
-    btn.className = "kopieren-code-btn";
+    btn.className = "copy-code-btn";
     btn.textContent = "kopieren";
     btn.onclick = () => {
       navigator.clipboard.writeText(pre.querySelector("code")?.textContent || "");
@@ -388,9 +382,6 @@ function setupEventListeners() {
 
   // Send button
   sendBtn.addEventListener("click", sendMessage);
-
-  // Stop
-  stopBtn.addEventListener("click", stopGeneration);
 
   // New chat
   $("new-chat-btn").addEventListener("click", () => {
